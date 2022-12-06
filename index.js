@@ -59,7 +59,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 
 app.get('/newquery/:promptname/:query', async function(req, res) {
 	const prompt = await dbget("prompts", {name: req.params.promptname}, {}, false);
-	const stops = (prompt.stop === "null") ? ["\n"] : prompt.stop.split(',');
+	const stops = ["\n"]; //(prompt.stop === "null") ? ["\n"] : prompt.stop.split(',');
 	var final_prompt = "";
 
 	//Check if the prompt contains an expression
@@ -76,13 +76,12 @@ app.get('/newquery/:promptname/:query', async function(req, res) {
 	var return_valid = null;
 
 	if((prompt.cascade == "true")) {
-		var new_prompt = await dbget("prompts", {name: r.response}, {}, false);
-		console.log(new_prompt);
+		var new_prompt = await dbget("prompts", {name: r}, {}, false);
 
-		if(new_prompt !== {} && (prompt.validate == "null" || new RegExp(prompt.validate).test(r))) {
+		if(new_prompt != null && (prompt.validate == "null" || new RegExp(prompt.validate).test(r))) {
 			r = await gpt3call(new_prompt.model, new_prompt.prompt + req.params.query, new_prompt.temp, "");
 		} else {
-			return_error = "AI returned prompt that does not exist."
+			return_error = "AI asked for prompt that does not exist."
 		}
 	}
 
