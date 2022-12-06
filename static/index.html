@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Gpt3 Portal</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<meta name="description" content="" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+	<link rel="icon" href="img/favicon.png">
+	<meta name="theme-color" content="#FF0000">
+	<link href="style.css" rel="stylesheet">
+
+	<style>
+		#result {
+			margin:20px;
+			border:1px solid grey;
+			border-radius: 20px;
+			padding:12px;
+		}
+	</style>
+</head>
+<body>
+	<div class="bg-dark text-secondary px-4 py-5 text-center">
+		<div class="py-5">
+		<h1 class="display-5 fw-bold text-white">Gpt3 portal</h1>
+		<p class="fs-5 mb-4">Select a prompt for the AI, then type your query and hit, 'ASK'.</p>
+		<div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+		
+			<div class="input-group mb-3">
+				<button class="btn btn-outline-secondary"  data-bs-toggle="modal" data-bs-target="#promptmodal" type="button" id="manageprompts"> + </button>
+				<select class="form-select" id="promptselect">
+					<option selected>Choose prompt</option>
+					<option value="custom">custom</option>
+					{{#each prompts}}
+						<option value="{{this.name}}">{{this.name}}</option>
+					{{/each}}
+				</select>
+
+				<!-- <input id="querystring" type="text" class="form-control" aria-label="Text input with dropdown button"> -->
+				<textarea id="querystring" class="form-control" aria-label="Query"></textarea>
+				<button id="askbutton" type="button" class="btn btn-outline-secondary">Ask</button>
+			</div>
+		</div>
+
+		<div id="result">
+			
+		</div>
+
+		<div style="max-height: clamp(500px,10vh,800px); overflow: auto;">
+		<table style="height: 200px;" class="table table-dark table-hover">
+			<thead class="sticky-top">
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Date</th>
+				<th scope="col">Name</th>
+				<th scope="col">Query</th>
+				<th scope="col">Response</th>
+				<th scope="col">favorite</th>
+			</tr>
+			</thead>
+			<tbody>
+			{{#each responses}}
+				<tr class="response_row">
+					<th scope="row">{{@index}}</th>
+					<th scope="row">{{date this.date}}</th>
+					<th scope="row">{{this.prompt}}</th>
+					<th scope="row">{{this.query}}</th>
+					<th scope="row">{{this.response}}</th>
+					<th class="queryfavstar" row_id="{{this._id}}" is_fav="{{this.favorite}}" scope="row"><span style='color:#{{favcolor this.favorite}};'>{{favorite this.favorite}}</span></th>
+				</tr>
+			{{/each}}
+			</tbody>
+		</table>
+		</div>
+
+	</div>
+	</div>
+
+
+	<div class="modal" id="promptmodal" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+			<h5 class="modal-title">Prompts</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+
+				<div style="max-height: clamp(300px,10vh,300px); overflow: auto;">
+				<table class="table table-dark table-hover">
+					<thead class="sticky-top">
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Name</th>
+						<th scope="col">Model</th>
+						<th scope="col">Prompt</th>
+					</tr>
+					</thead>
+					<tbody id="prompt_list">
+					{{#each prompts}}
+						<tr class="prompt_row" 	data1="{{this.name}}" 
+												data2="{{this.model}}"
+												data3="{{this.prompt}}"
+												data4="{{this.temp}}"
+												data4="{{this.stop}}"
+												data5="{{this.validate}}"
+												data6="{{this.cascade}}"
+												data7="{{this.execute}}">
+							<th scope="row">{{@index}}</th>
+							<th scope="row">{{this.name}}</th>
+							<th scope="row">{{this.model}}</th>
+							<th scope="row">{{abrv this.prompt 10}}</th>
+						</tr>
+					{{/each}}
+					</tbody>
+				</table>
+				</div>
+
+				<h5 class="modal-title">Prompt editor</h5>
+				<hr class="bg-primary border-2 border-top border-primary">
+
+				<form id="prompt_form">
+
+					<div class="row">
+						<div class="col">
+
+							<div class="mb-3">
+								<label for="exampleFormControlInput1" class="form-label">Prompt name</label>
+								<input type="email" class="form-control" id="prompt_name_input" placeholder="example_name">
+							</div>
+							
+							<div class="mb-3">
+								<label for="customRange3" class="form-label">Temperature 0.0 - 1.0</label>
+								<input type="range" class="form-range" min="0" max="1" step="0.1" id="prompt_temp_input">
+							</div>
+		
+							<div class="mb-3">
+								<label for="staticEmail" class="col-sm-2 col-form-label">Model</label>
+								<select class="form-select" aria-label="Default select example" id="prompt_model_input">
+									<option selected>Choose a model</option>
+									<option value="text-davinci-003">text-davinci-003</option>
+									<option value="text-curie-001">text-curie-001</option>
+									<option value="text-babbage-001">text-babbage-001</option>
+									<option value="text-babbage-001">code-davinci-002</option>
+									<option value="text-babbage-001">code-cushman-001</option>
+								</select>
+							</div>
+		
+							<div class="mb-3">
+								<label for="exampleFormControlInput1" class="form-label">Validation regex</label>
+								<input type="text" class="form-control" id="prompt_validate_input" placeholder="regex">
+							</div>
+		
+						</div>
+
+						<div class="col">
+							<div class="mb-3">
+								<label for="exampleFormControlTextarea1" class="form-label">Prompt/Query - use <span style="color:brown;">\{{query}}</span> in the text, if the query should be inserted instead of appended</label>
+								<textarea class="form-control" id="prompt_prompt_input" rows="3"></textarea>
+							</div>
+
+							<div class="mb-3">
+								<input class="form-check-input" type="checkbox" id="prompt_cascade_input">
+								<label class="form-check-label" for="flexCheckChecked">
+									Cascade response?
+								</label>
+							</div>
+		
+							<div class="mb-3">
+								<input class="form-check-input" type="checkbox" id="prompt_execute_input">
+								<label class="form-check-label" for="flexCheckChecked">
+									Execute response? (ignored if cascading output)
+								</label>
+							</div>
+						</div>
+					</div>
+
+				</form>
+			
+			</div>
+			<div class="modal-footer">
+			<button id="clearpromptbutton" type="button" class="btn btn-warning">Clear</button>
+			<button id="closepromptbutton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			<button id="savepromptbutton" type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+			<button id="deletepromptbutton" type="button" class="btn btn-danger" data-bs-dismiss="modal">delete</button>
+			</div>
+		</div>
+		</div>
+	</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	<script src="behavior.js"></script>
+</body>
+</html>
