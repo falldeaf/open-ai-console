@@ -11,71 +11,84 @@
 	<link href="style.css" rel="stylesheet">
 
 	<style>
-		#result {
+		#result-container {
 			margin:20px;
 			border:1px solid grey;
 			border-radius: 20px;
 			padding:12px;
+			min-height: 50px;
+		}
+
+		#result {
+
+		}
+
+		#result-copy {
+			cursor: pointer;
 		}
 	</style>
 </head>
 <body>
-	<div class="bg-dark text-secondary px-4 py-5 text-center">
-		<div class="py-5">
-		<h1 class="display-5 fw-bold text-white">Gpt3 portal</h1>
-		<p class="fs-5 mb-4">Select a prompt for the AI, then type your query and hit, 'ASK'.</p>
-		<div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-		
-			<div class="input-group mb-3">
-				<button class="btn btn-outline-secondary"  data-bs-toggle="modal" data-bs-target="#promptmodal" type="button" id="manageprompts"> + </button>
-				<select class="form-select" id="promptselect">
-					<option selected>Choose prompt</option>
-					<option value="custom">custom</option>
-					{{#each prompts}}
-						<option value="{{this.name}}">{{this.name}}</option>
-					{{/each}}
-				</select>
 
-				<!-- <input id="querystring" type="text" class="form-control" aria-label="Text input with dropdown button"> -->
-				<textarea id="querystring" class="form-control" aria-label="Query"></textarea>
-				<button id="askbutton" type="button" class="btn btn-outline-secondary">Ask</button>
-			</div>
-		</div>
+	<div class="container">
 
-		<div id="result">
+		<div class="bg-dark text-secondary px-4 py-5 text-center">
+			<div class="py-5">
+			<h1 class="display-5 fw-bold text-white">Gpt3 portal</h1>
+			<p class="fs-5 mb-4">Select a prompt for the AI, then type your query and hit, 'ASK'.</p>
+			<div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
 			
-		</div>
+				<div class="input-group mb-3">
+					<button class="btn btn-outline-secondary"  data-bs-toggle="modal" data-bs-target="#promptmodal" type="button" id="manageprompts"> + </button>
+					<select class="form-select form-select-lg" id="promptselect">
+						<!-- <option selected>Choose prompt</option>
+						<option value="custom">custom</option> -->
+						{{#each prompts}} 
+							<option value="{{this.name}}">{{this.name}}</option>
+						{{/each}}
+					</select>
 
-		<div style="max-height: clamp(500px,10vh,800px); overflow: auto;">
-		<table style="height: 200px;" class="table table-dark table-hover">
-			<thead class="sticky-top">
-			<tr>
-				<th scope="col">#</th>
-				<th scope="col">Date</th>
-				<th scope="col">Name</th>
-				<th scope="col">Query</th>
-				<th scope="col">Response</th>
-				<th scope="col">favorite</th>
-			</tr>
-			</thead>
-			<tbody>
-			{{#each responses}}
-				<tr class="response_row">
-					<th scope="row">{{@index}}</th>
-					<th scope="row">{{date this.date}}</th>
-					<th scope="row">{{this.prompt}}</th>
-					<th scope="row">{{this.query}}</th>
-					<th scope="row">{{this.response}}</th>
-					<th class="queryfavstar" row_id="{{this._id}}" is_fav="{{this.favorite}}" scope="row"><span style='color:#{{favcolor this.favorite}};'>{{favorite this.favorite}}</span></th>
+					<!-- <input id="querystring" type="text" class="form-control" aria-label="Text input with dropdown button"> -->
+					<textarea id="querystring" class="form-control w-75" placeholder="Enter your query" aria-label="Query"></textarea>
+					<button id="askbutton" type="button" class="btn btn-outline-secondary">Ask</button>
+				</div>
+			</div>
+
+			<div id="result-container" class="d-flex justify-content-between">
+				<span id="result"></span>
+				<span id="result-copy">📋 copy</span>
+			</div>
+
+			<div style="max-height: clamp(500px,10vh,800px); overflow: auto;">
+			<table style="height: 200px;" class="table table-dark table-hover">
+				<thead class="sticky-top">
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Date</th>
+					<th scope="col">Name</th>
+					<th scope="col">Query</th>
+					<th scope="col">Response</th>
+					<th scope="col">favorite</th>
 				</tr>
-			{{/each}}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+				{{#each responses}}
+					<tr class="response_row">
+						<th scope="row">{{@index}}</th>
+						<th scope="row">{{date this.date}}</th>
+						<th scope="row">{{this.prompt}}</th>
+						<th scope="row">{{this.query}}</th>
+						<th scope="row">{{this.response}}</th>
+						<th class="queryfavstar" row_id="{{this._id}}" is_fav="{{this.favorite}}" scope="row"><span style='color:#{{favcolor this.favorite}};'>{{favorite this.favorite}}</span></th>
+					</tr>
+				{{/each}}
+				</tbody>
+			</table>
+			</div>
+
 		</div>
-
+		</div>
 	</div>
-	</div>
-
 
 	<div class="modal" id="promptmodal" tabindex="-1">
 		<div class="modal-dialog modal-lg">
@@ -105,7 +118,8 @@
 												data4="{{this.stop}}"
 												data5="{{this.validate}}"
 												data6="{{this.cascade}}"
-												data7="{{this.execute}}">
+												data7="{{this.execute}}"
+												data8="{{this.addin}}">
 							<th scope="row">{{@index}}</th>
 							<th scope="row">{{this.name}}</th>
 							<th scope="row">{{this.model}}</th>
@@ -126,17 +140,17 @@
 
 							<div class="mb-3">
 								<label for="exampleFormControlInput1" class="form-label">Prompt name</label>
-								<input type="email" class="form-control" id="prompt_name_input" placeholder="example_name">
+								<input name="name" type="text" class="form-control" id="prompt_name_input" placeholder="example_name">
 							</div>
 							
 							<div class="mb-3">
 								<label for="customRange3" class="form-label">Temperature 0.0 - 1.0</label>
-								<input type="range" class="form-range" min="0" max="1" step="0.1" id="prompt_temp_input">
+								<input name="temp" type="range" class="form-range" min="0" max="1" step="0.1" id="prompt_temp_input">
 							</div>
 		
 							<div class="mb-3">
 								<label for="staticEmail" class="col-sm-2 col-form-label">Model</label>
-								<select class="form-select" aria-label="Default select example" id="prompt_model_input">
+								<select name="model" class="form-select" aria-label="Default select example" id="prompt_model_input">
 									<option selected>Choose a model</option>
 									<option value="text-davinci-003">text-davinci-003</option>
 									<option value="text-curie-001">text-curie-001</option>
@@ -148,26 +162,32 @@
 		
 							<div class="mb-3">
 								<label for="exampleFormControlInput1" class="form-label">Validation regex</label>
-								<input type="text" class="form-control" id="prompt_validate_input" placeholder="regex">
+								<input name="validate" type="text" class="form-control" id="prompt_validate_input" placeholder="regex">
 							</div>
 		
 						</div>
 
 						<div class="col">
+
 							<div class="mb-3">
-								<label for="exampleFormControlTextarea1" class="form-label">Prompt/Query - use <span style="color:brown;">\{{query}}</span> in the text, if the query should be inserted instead of appended</label>
-								<textarea class="form-control" id="prompt_prompt_input" rows="3"></textarea>
+								<label for="exampleFormControlInput1" class="form-label">Data addin (url or cl)</label>
+								<input name="addin" type="text" class="form-control" id="prompt_addin_input" placeholder="addin">
 							</div>
 
 							<div class="mb-3">
-								<input class="form-check-input" type="checkbox" id="prompt_cascade_input">
+								<label for="exampleFormControlTextarea1" class="form-label">Prompt/Query - use <span style="color:brown;">\{{query}}</span> in the text, if the query should be inserted instead of appended</label>
+								<textarea name="prompt" class="form-control" id="prompt_prompt_input" rows="3"></textarea>
+							</div>
+
+							<div class="mb-3">
+								<input name="cascade" class="form-check-input" type="checkbox" id="prompt_cascade_input">
 								<label class="form-check-label" for="flexCheckChecked">
 									Cascade response?
 								</label>
 							</div>
 		
 							<div class="mb-3">
-								<input class="form-check-input" type="checkbox" id="prompt_execute_input">
+								<input name="execute" class="form-check-input" type="checkbox" id="prompt_execute_input">
 								<label class="form-check-label" for="flexCheckChecked">
 									Execute response? (ignored if cascading output)
 								</label>
@@ -189,6 +209,7 @@
 	</div>
 	
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
 	<script src="behavior.js"></script>
 </body>
 </html>
